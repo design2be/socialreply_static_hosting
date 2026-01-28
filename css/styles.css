@@ -137,7 +137,7 @@ body {
   margin: 16px auto 0;
   max-width: 72ch;
   text-align: center;
-  font-size: 16.5px;
+  font-size: 18px;
   line-height: 1.5;
   color: var(--muted);
 }
@@ -369,15 +369,28 @@ body {
   border: 1px solid rgba(15, 22, 38, 0.12);
   background: #ffffff;
   opacity: 0;
-  transform: translateY(6px);
-  transition:
-    opacity 260ms ease,
-    transform 260ms ease;
+  transform: translateY(6px) scale(0.8);
+  transform-origin: top left;
+  will-change: transform, opacity;
 }
 
 .reply-bubble.is-shown {
-  opacity: 1;
-  transform: translateY(0);
+  animation: reply-pop 420ms cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+@keyframes reply-pop {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.8);
+  }
+  55% {
+    opacity: 1;
+    transform: translateY(0) scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .reply-label {
@@ -412,7 +425,7 @@ body {
   transition:
     opacity 180ms ease,
     transform 260ms cubic-bezier(0.2, 0.9, 0.2, 1);
-  z-index: 6;
+  z-index: 10;
 }
 
 .demo-cursor.is-visible {
@@ -420,13 +433,8 @@ body {
 }
 
 .demo-step {
-  position: absolute;
-  left: 14px;
-  bottom: 14px;
-  z-index: 5;
-  pointer-events: none;
-
-  max-width: min(520px, calc(100% - 28px));
+  margin: 14px auto 0;
+  max-width: min(680px, calc(100% - 28px));
   padding: 10px 12px;
   border-radius: 14px;
   border: 1px solid rgba(15, 22, 38, 0.12);
@@ -437,6 +445,7 @@ body {
   opacity: 0;
   transform: translateY(6px);
   transition: opacity 180ms ease, transform 180ms ease;
+  text-align: center;
 }
 
 .demo-step.is-visible {
@@ -444,12 +453,7 @@ body {
   transform: translateY(0);
 }
 
-@media (min-width: 861px) {
-  .demo-step {
-    /* Keep the step label clear of the docked popup width. */
-    max-width: min(520px, calc(100% - 28px - 392px));
-  }
-}
+/* (No responsive max-width adjustment needed now that the label sits in the hero.) */
 
 .cursor-dot {
   width: 14px;

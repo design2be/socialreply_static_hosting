@@ -34,7 +34,7 @@
 
   // Keep the popup/tool visible longer.
   const POPUP_BEFORE_GENERATE_MS = 850;
-  const GENERATION_LOADING_MS = 3000;
+  const GENERATION_LOADING_MS = 1000;
   const AFTER_GENERATION_REVEAL_PAUSE_MS = 900;
   const AFTER_INSERT_PAUSE_MS = 600;
 
@@ -142,7 +142,8 @@
     const maxOffset = Math.max(0, track.scrollHeight - viewportH);
 
     const targetTop = targetPost.offsetTop;
-    const targetOffset = clamp(targetTop - 130, 0, maxOffset);
+    // Keep the target comment comfortably in view with space below for the inserted reply.
+    const targetOffset = clamp(targetTop - 60, 0, maxOffset);
 
     setTrackOffset(track, clamp(120, 0, maxOffset), 900);
     await sleep(980);
@@ -224,7 +225,7 @@
       targetComment: shell.querySelector(SELECTORS.targetComment),
       replyBtn: shell.querySelector(SELECTORS.replyBtn),
       popup: shell.querySelector(SELECTORS.popup),
-      stepLabel: shell.querySelector(SELECTORS.stepLabel),
+      stepLabel: document.querySelector(SELECTORS.stepLabel),
       cursor: shell.querySelector(SELECTORS.cursor),
       generateBtn: shell.querySelector(SELECTORS.generateBtn),
       insertBtn: shell.querySelector(SELECTORS.insertBtn),
