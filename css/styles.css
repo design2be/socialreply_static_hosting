@@ -14,6 +14,10 @@ body {
   height: 100%;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
@@ -52,23 +56,99 @@ body {
   padding: 0 0 72px;
 }
 
+.footer {
+  border-top: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(8px);
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  padding: 18px 0;
+}
+
+.footer-link {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 13.5px;
+}
+
+.footer-link:hover {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 .hero {
   padding: 56px 0 28px;
 }
 
 .hero-title {
   margin: 0;
-  font-size: clamp(28px, 3.4vw, 44px);
-  line-height: 1.08;
-  letter-spacing: -0.02em;
+  text-align: center;
+  font-size: clamp(34px, 4.6vw, 58px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+}
+
+.hero-highlight {
+  display: inline-block;
+  background: linear-gradient(90deg, #2f81ff 0%, #8b5cf6 45%, #22c55e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 24px rgba(47, 129, 255, 0.12);
 }
 
 .hero-subtitle {
-  margin: 14px 0 0;
-  max-width: 70ch;
-  font-size: 16px;
+  margin: 16px auto 0;
+  max-width: 72ch;
+  text-align: center;
+  font-size: 16.5px;
   line-height: 1.5;
   color: var(--muted);
+}
+
+.hero-cta {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 22px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  color: #ffffff;
+  background: linear-gradient(90deg, #2f81ff 0%, #8b5cf6 45%, #22c55e 100%);
+  box-shadow:
+    0 16px 34px rgba(17, 24, 39, 0.18),
+    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+  transform: translateZ(0);
+  transition: transform 140ms ease, filter 140ms ease;
+}
+
+.cta-button:hover {
+  filter: brightness(1.02);
+  transform: translateY(-1px);
+}
+
+.cta-button:active {
+  transform: translateY(0);
+}
+
+.cta-button:focus-visible {
+  outline: 3px solid rgba(47, 129, 255, 0.35);
+  outline-offset: 4px;
 }
 
 .demo-section {
@@ -660,6 +740,127 @@ body {
   margin: 12px 0 0;
   font-size: 12.5px;
   color: var(--muted);
+}
+
+/* --- Browsers section --- */
+.browsers {
+  padding: 42px 0 10px;
+}
+
+.browsers-title {
+  margin: 0;
+  text-align: center;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.browser-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+@media (max-width: 720px) {
+  .browser-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.browser-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(15, 22, 38, 0.12);
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.06);
+}
+
+.browser-icon {
+  width: 44px;
+  height: 44px;
+  display: block;
+}
+
+.browser-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* --- Benefits section --- */
+.benefits {
+  padding: 42px 0 10px;
+}
+
+.benefits-title {
+  margin: 0;
+  text-align: center;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.benefit-row {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(15, 22, 38, 0.12);
+  box-shadow: 0 10px 26px rgba(17, 24, 39, 0.06);
+}
+
+.benefit-row.is-reversed .benefit-media {
+  order: 2;
+}
+
+.benefit-row.is-reversed .benefit-copy {
+  order: 1;
+}
+
+@media (max-width: 860px) {
+  .benefit-row {
+    grid-template-columns: 1fr;
+  }
+  .benefit-row.is-reversed .benefit-media,
+  .benefit-row.is-reversed .benefit-copy {
+    order: initial;
+  }
+}
+
+.benefit-media {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.benefit-illustration {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  display: block;
+}
+
+.benefit-copy {
+  padding: 4px 6px;
+}
+
+.benefit-heading {
+  margin: 0;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+.benefit-text {
+  margin: 10px 0 0;
+  color: var(--muted);
+  line-height: 1.55;
 }
 
 /* Reduced motion / static fallback. */
