@@ -435,7 +435,7 @@ body {
 }
 
 .demo-step {
-  margin: 80px auto 0;
+  margin: 40px auto 0;
   max-width: min(680px, calc(100% - 28px));
   display: flex;
   align-items: center;
@@ -831,7 +831,11 @@ body {
 
 /* --- Browsers section --- */
 .browsers {
-  padding: 42px 0 10px;
+  padding: 82px 0 40px;
+}
+
+.browsers .container {
+  max-width: 800px;
 }
 
 .browsers-title {
@@ -944,8 +948,9 @@ body {
 
 .benefits-title {
   margin: 0;
+  margin-bottom: 40px;
   text-align: center;
-  font-size: 22px;
+  font-size: 30px;
   letter-spacing: -0.02em;
 }
 
