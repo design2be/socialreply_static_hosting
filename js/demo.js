@@ -149,10 +149,6 @@
     await sleep(980);
     await sleep(460);
 
-    setTrackOffset(track, clamp(260, 0, maxOffset), 820);
-    await sleep(900);
-    await sleep(420);
-
     setTrackOffset(track, targetOffset, 950);
     await sleep(1030);
     await sleep(550);
