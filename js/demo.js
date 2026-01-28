@@ -204,7 +204,6 @@
     await sleep(AFTER_INSERT_PAUSE_MS);
     closePopup(popup);
     setCursorVisible(cursor, false);
-    targetComment.classList.remove("is-responding");
     insertedReply.querySelector(".reply-text").textContent = SUGGESTION;
     insertedReply.classList.add("is-shown");
     insertedReply.setAttribute("aria-hidden", "false");
