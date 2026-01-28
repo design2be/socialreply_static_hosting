@@ -142,46 +142,6 @@ body {
   color: var(--muted);
 }
 
-.hero-cta {
-  margin-top: 18px;
-  display: flex;
-  justify-content: center;
-}
-
-.cta-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 14px 22px;
-  border-radius: 14px;
-  font-size: 16px;
-  font-weight: 750;
-  letter-spacing: -0.01em;
-  text-decoration: none;
-  color: #ffffff;
-  background: linear-gradient(90deg, #2f81ff 0%, #8b5cf6 45%, #22c55e 100%);
-  box-shadow:
-    0 16px 34px rgba(17, 24, 39, 0.18),
-    0 0 0 1px rgba(255, 255, 255, 0.5) inset;
-  transform: translateZ(0);
-  transition: transform 140ms ease, filter 140ms ease;
-}
-
-.cta-button:hover {
-  filter: brightness(1.02);
-  transform: translateY(-1px);
-}
-
-.cta-button:active {
-  transform: translateY(0);
-}
-
-.cta-button:focus-visible {
-  outline: 3px solid rgba(47, 129, 255, 0.35);
-  outline-offset: 4px;
-}
-
 .demo-section {
   padding: 22px 0 0;
 }
@@ -231,6 +191,7 @@ body {
 }
 
 .feed-pane {
+  margin: 80px 0;
   border-radius: 0;
   overflow: visible;
   background: transparent;
@@ -242,6 +203,28 @@ body {
   overflow: hidden;
   position: relative;
   background: transparent;
+}
+
+/* Fade the feed into white at top/bottom edges. */
+.feed-viewport::before,
+.feed-viewport::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 80px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.feed-viewport::before {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+}
+
+.feed-viewport::after {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
 }
 
 .feed-track {
@@ -702,6 +685,7 @@ body {
 }
 
 .suggestion-card {
+  position: relative;
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(0, 0, 0, 0.2);
@@ -716,14 +700,59 @@ body {
   white-space: pre-wrap;
 }
 
-.suggestion-card.is-typing .suggestion-text {
+.suggestion-loading {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  top: 10px;
+  height: 78px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.suggestion-loading[aria-hidden="true"] {
+  display: none;
+}
+
+.suggestion-spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.24);
+  border-top-color: rgba(255, 255, 255, 0.92);
+  animation: suggestion-spin 900ms linear infinite;
+}
+
+.suggestion-loading-label {
+  font-size: 12px;
   color: rgba(255, 255, 255, 0.72);
 }
 
-.suggestion-actions {
+@keyframes suggestion-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.suggestion-primary-actions {
+  margin-top: 10px;
+  display: flex;
+}
+
+.suggestion-primary-actions .popup-btn {
+  width: 100%;
+}
+
+.suggestion-secondary-actions {
   margin-top: 10px;
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .chip-btn {
@@ -735,11 +764,6 @@ body {
   font-size: 12px;
   cursor: default;
   transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
-}
-
-.chip-btn--green {
-  background: rgba(46, 214, 146, 0.2);
-  border-color: rgba(46, 214, 146, 0.4);
 }
 
 .chip-btn--danger {

@@ -31,6 +31,12 @@
     "4. Click Insert to post it instantly.",
   ];
 
+  // Slow the demo down a bit so the popup/tool is visible longer.
+  const TYPE_SPEED_MULTIPLIER = 1.8;
+  const POPUP_BEFORE_GENERATE_MS = 850;
+  const AFTER_TYPING_PAUSE_MS = 900;
+  const AFTER_INSERT_PAUSE_MS = 420;
+
   const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
   const sleep = (ms) => new Promise((r) => window.setTimeout(r, ms));
@@ -82,8 +88,8 @@
     for (let i = 0; i < text.length; i += 1) {
       el.textContent += text[i];
       // Small human-ish jitter; faster on spaces.
-      const base = text[i] === " " ? 14 : 22;
-      const jitter = Math.random() * 22;
+      const base = (text[i] === " " ? 14 : 22) * TYPE_SPEED_MULTIPLIER;
+      const jitter = Math.random() * 22 * TYPE_SPEED_MULTIPLIER;
       await sleep(base + jitter);
     }
   }
@@ -159,7 +165,7 @@
 
     // Popup opens.
     openPopup(popup);
-    await sleep(420);
+    await sleep(POPUP_BEFORE_GENERATE_MS);
 
     // Click Generate, then type the suggestion.
     setStep(stepLabel, STEPS[2]);
@@ -169,7 +175,7 @@
     await sleep(260);
     await typeInto(suggestionText, SUGGESTION);
     suggestionCard.classList.remove("is-typing");
-    await sleep(320);
+    await sleep(AFTER_TYPING_PAUSE_MS);
 
     // Cursor clicks Insert.
     setStep(stepLabel, STEPS[3]);
@@ -179,6 +185,7 @@
     await sleep(160);
 
     // Popup closes, reply appears.
+    await sleep(AFTER_INSERT_PAUSE_MS);
     closePopup(popup);
     setCursorVisible(cursor, false);
     targetComment.classList.remove("is-responding");

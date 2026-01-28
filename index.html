@@ -26,11 +26,6 @@
             SocialReply is a browser plugin that generates thoughtful, ready-to-post responses while you scroll
             LinkedIn, YouTube, and Instagram. Respond in seconds.
           </p>
-          <div class="hero-cta">
-            <a class="cta-button" href="#demo" aria-label="Test SocialReply demo">
-              Test SocialReply
-            </a>
-          </div>
         </div>
       </section>
 
@@ -232,7 +227,6 @@
 
                     <div class="popup-actions">
                       <button class="popup-btn popup-btn--primary" type="button" data-demo-generate>Generate</button>
-                      <button class="popup-btn popup-btn--danger" type="button">Clear</button>
                     </div>
 
                     <div class="popup-suggestions">
@@ -241,9 +235,15 @@
                       </div>
 
                       <div class="suggestion-card" data-demo-suggestion-card>
-                        <div class="suggestion-text" data-demo-suggestion-text>Generating…</div>
-                        <div class="suggestion-actions">
-                          <button class="chip-btn chip-btn--green" type="button" data-demo-insert>Insert</button>
+                        <div class="suggestion-loading" data-demo-suggestion-loading aria-hidden="true">
+                          <div class="suggestion-spinner" aria-hidden="true"></div>
+                          <div class="suggestion-loading-label">Generating…</div>
+                        </div>
+                        <div class="suggestion-text" data-demo-suggestion-text></div>
+                        <div class="suggestion-primary-actions">
+                          <button class="popup-btn popup-btn--primary" type="button" data-demo-insert>Insert</button>
+                        </div>
+                        <div class="suggestion-secondary-actions">
                           <button class="chip-btn" type="button">Copy</button>
                           <button class="chip-btn chip-btn--danger" type="button">Remove</button>
                         </div>
