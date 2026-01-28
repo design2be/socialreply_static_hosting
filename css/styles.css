@@ -191,7 +191,9 @@ body {
 }
 
 .feed-pane {
-  margin: 80px 0;
+  width: 100%;
+  max-width: 700px;
+  margin: 80px auto;
   border-radius: 0;
   overflow: visible;
   background: transparent;
@@ -379,21 +381,21 @@ body {
 }
 
 .reply-label {
-  font-size: 20px;
-  font-weight: 750;
+  font-size: var(--comment-size);
+  font-weight: 700;
   color: #111827;
 }
 
 .reply-text {
   margin-top: 6px;
-  font-size: 24px;
+  font-size: var(--comment-size);
   line-height: 1.45;
   color: #374151;
 }
 
 .reply-time {
   margin-top: 6px;
-  font-size: 20px;
+  font-size: var(--time-size);
   color: #6b7280;
 }
 
@@ -457,6 +459,14 @@ body {
   box-shadow:
     0 10px 24px rgba(0, 0, 0, 0.38),
     0 0 0 4px rgba(124, 92, 255, 0.2);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.demo-cursor.is-clicking .cursor-dot {
+  transform: scale(0.82);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.42),
+    0 0 0 6px rgba(124, 92, 255, 0.26);
 }
 
 /* --- Plugin popup (replicates screenshot vibe) --- */
@@ -493,7 +503,7 @@ body {
   left: auto;
   width: 392px;
   max-width: none;
-  height: var(--demo-height);
+  height: auto;
   margin: 0;
 
   /* Drawer behavior (hidden until is-open). */
@@ -517,7 +527,7 @@ body {
     margin: 0 auto;
     top: 12px;
     height: auto;
-    max-height: calc(var(--demo-height) - 24px);
+    max-height: none;
   }
 }
 
@@ -741,39 +751,15 @@ body {
 
 .suggestion-primary-actions {
   margin-top: 10px;
-  display: flex;
+  display: none;
 }
 
 .suggestion-primary-actions .popup-btn {
   width: 100%;
 }
 
-.suggestion-secondary-actions {
-  margin-top: 10px;
+.suggestion-card.is-ready .suggestion-primary-actions {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.chip-btn {
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.86);
-  padding: 7px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  cursor: default;
-  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
-}
-
-.chip-btn--danger {
-  background: rgba(255, 120, 120, 0.14);
-  border-color: rgba(255, 120, 120, 0.35);
-  color: rgba(255, 200, 200, 0.9);
-}
-
-.chip-btn.is-pressed {
-  transform: scale(0.985);
 }
 
 .popup-tip {

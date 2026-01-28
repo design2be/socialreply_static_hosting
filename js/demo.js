@@ -11,6 +11,7 @@
     cursor: "[data-demo-cursor]",
     generateBtn: "[data-demo-generate]",
     insertBtn: "[data-demo-insert]",
+    suggestionLoading: "[data-demo-suggestion-loading]",
     suggestionText: "[data-demo-suggestion-text]",
     suggestionsCount: "[data-demo-suggestions-count]",
     suggestionCard: "[data-demo-suggestion-card]",
@@ -22,7 +23,7 @@
   };
 
   const SUGGESTION =
-    "Great question—when everything feels important, I anchor on the goal and constraints (customer impact, time, reversibility). Then I rank options by impact vs effort and pick 1–2 “must-win” bets for the week. What’s the one outcome you’d be happiest to ship even if everything else slips?";
+    "Great question. I pick 1–2 outcomes that most move the goal, then cut anything that doesn’t support them. If you had to ship just one thing this week, what would it be?";
 
   const STEPS = [
     "1. Scroll your feed (LinkedIn, YouTube, Instagram).",
@@ -31,11 +32,11 @@
     "4. Click Insert to post it instantly.",
   ];
 
-  // Slow the demo down a bit so the popup/tool is visible longer.
-  const TYPE_SPEED_MULTIPLIER = 1.8;
+  // Keep the popup/tool visible longer.
   const POPUP_BEFORE_GENERATE_MS = 850;
-  const AFTER_TYPING_PAUSE_MS = 900;
-  const AFTER_INSERT_PAUSE_MS = 420;
+  const GENERATION_LOADING_MS = 3000;
+  const AFTER_GENERATION_REVEAL_PAUSE_MS = 900;
+  const AFTER_INSERT_PAUSE_MS = 600;
 
   const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
@@ -52,6 +53,11 @@
 
   function setCursorVisible(cursor, isVisible) {
     cursor.classList.toggle("is-visible", isVisible);
+  }
+
+  function pulseCursorClick(cursor) {
+    cursor.classList.add("is-clicking");
+    window.setTimeout(() => cursor.classList.remove("is-clicking"), 160);
   }
 
   function setStep(stepEl, text) {
@@ -83,19 +89,12 @@
     popup.setAttribute("aria-hidden", "true");
   }
 
-  async function typeInto(el, text) {
-    el.textContent = "";
-    for (let i = 0; i < text.length; i += 1) {
-      el.textContent += text[i];
-      // Small human-ish jitter; faster on spaces.
-      const base = (text[i] === " " ? 14 : 22) * TYPE_SPEED_MULTIPLIER;
-      const jitter = Math.random() * 22 * TYPE_SPEED_MULTIPLIER;
-      await sleep(base + jitter);
-    }
-  }
-
   function setStaticFinalState(root) {
     root.classList.add("demo--static");
+  }
+
+  function setLoading(loadingEl, isLoading) {
+    loadingEl.setAttribute("aria-hidden", isLoading ? "false" : "true");
   }
 
   async function runOnce(els) {
@@ -110,6 +109,7 @@
       cursor,
       generateBtn,
       insertBtn,
+      suggestionLoading,
       suggestionText,
       suggestionsCount,
       suggestionCard,
@@ -121,9 +121,11 @@
     setCursorVisible(cursor, false);
     setStep(stepLabel, STEPS[0]);
     targetComment.classList.remove("is-responding");
-    suggestionCard.classList.remove("is-typing");
+    suggestionCard.classList.remove("is-loading");
+    suggestionCard.classList.remove("is-ready");
+    setLoading(suggestionLoading, false);
     suggestionsCount.textContent = "0";
-    suggestionText.textContent = "Generating…";
+    suggestionText.textContent = "";
     insertedReply.classList.remove("is-shown");
     insertedReply.setAttribute("aria-hidden", "true");
     insertedReply.querySelector(".reply-text").textContent = "";
@@ -167,20 +169,31 @@
     openPopup(popup);
     await sleep(POPUP_BEFORE_GENERATE_MS);
 
-    // Click Generate, then type the suggestion.
+    // Cursor moves to Generate and clicks.
     setStep(stepLabel, STEPS[2]);
+    positionCursorOver(cursor, shell, generateBtn);
+    await sleep(420);
+    pulseCursorClick(cursor);
     setPressedClass(generateBtn);
-    suggestionCard.classList.add("is-typing");
+
+    // Show loading spinner, then reveal the full suggestion.
     suggestionsCount.textContent = "1";
-    await sleep(260);
-    await typeInto(suggestionText, SUGGESTION);
-    suggestionCard.classList.remove("is-typing");
-    await sleep(AFTER_TYPING_PAUSE_MS);
+    suggestionText.textContent = "";
+    suggestionCard.classList.add("is-loading");
+    suggestionCard.classList.remove("is-ready");
+    setLoading(suggestionLoading, true);
+    await sleep(GENERATION_LOADING_MS);
+    setLoading(suggestionLoading, false);
+    suggestionCard.classList.remove("is-loading");
+    suggestionText.textContent = SUGGESTION;
+    suggestionCard.classList.add("is-ready");
+    await sleep(AFTER_GENERATION_REVEAL_PAUSE_MS);
 
     // Cursor clicks Insert.
     setStep(stepLabel, STEPS[3]);
     positionCursorOver(cursor, shell, insertBtn);
-    await sleep(300);
+    await sleep(420);
+    pulseCursorClick(cursor);
     setPressedClass(insertBtn);
     await sleep(160);
 
@@ -215,6 +228,7 @@
       cursor: shell.querySelector(SELECTORS.cursor),
       generateBtn: shell.querySelector(SELECTORS.generateBtn),
       insertBtn: shell.querySelector(SELECTORS.insertBtn),
+      suggestionLoading: shell.querySelector(SELECTORS.suggestionLoading),
       suggestionText: shell.querySelector(SELECTORS.suggestionText),
       suggestionsCount: shell.querySelector(SELECTORS.suggestionsCount),
       suggestionCard: shell.querySelector(SELECTORS.suggestionCard),
@@ -240,7 +254,10 @@
       // Show the “after” state without motion.
       openPopup(els.popup);
       els.suggestionsCount.textContent = "1";
+      setLoading(els.suggestionLoading, false);
+      els.suggestionCard.classList.remove("is-loading");
       els.suggestionText.textContent = SUGGESTION;
+      els.suggestionCard.classList.add("is-ready");
       els.insertedReply.querySelector(".reply-text").textContent = SUGGESTION;
       els.insertedReply.classList.add("is-shown");
       els.insertedReply.setAttribute("aria-hidden", "false");
