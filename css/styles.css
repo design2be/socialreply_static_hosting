@@ -72,7 +72,7 @@ body {
 }
 
 .logo {
-  height: 50px;
+  height: 40px;
   width: auto;
   display: block;
 }
@@ -577,6 +577,12 @@ body {
   font-size: 13px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.9);
+}
+
+.popup-logo {
+  height: 20px;
+  width: auto;
+  display: block;
 }
 
 .popup-close {
