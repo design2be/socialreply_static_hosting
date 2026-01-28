@@ -61,8 +61,18 @@
   }
 
   function setStep(stepEl, text) {
-    stepEl.textContent = text ?? "";
-    stepEl.classList.toggle("is-visible", Boolean(text));
+    if (!text) {
+      stepEl.textContent = "";
+      stepEl.classList.remove("is-visible");
+      return;
+    }
+
+    const match = String(text).match(/^(\d+)\.\s*(.*)$/);
+    const stepNum = match?.[1] ?? "";
+    const stepText = match?.[2] ?? String(text);
+
+    stepEl.innerHTML = `<span class="demo-step-num" aria-hidden="true">${stepNum}</span><span class="demo-step-text">${stepText}</span>`;
+    stepEl.classList.add("is-visible");
   }
 
   function positionCursorOver(cursor, shell, el) {
@@ -144,10 +154,6 @@
     const targetTop = targetPost.offsetTop;
     // Keep the target comment comfortably in view with space below for the inserted reply.
     const targetOffset = clamp(targetTop - 60, 0, maxOffset);
-
-    setTrackOffset(track, clamp(120, 0, maxOffset), 900);
-    await sleep(980);
-    await sleep(460);
 
     setTrackOffset(track, targetOffset, 950);
     await sleep(1030);

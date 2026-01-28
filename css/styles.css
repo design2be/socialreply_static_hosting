@@ -437,6 +437,11 @@ body {
 .demo-step {
   margin: 80px auto 0;
   max-width: min(680px, calc(100% - 28px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: fit-content;
   padding: 10px 12px;
   border-radius: 14px;
   border: 1px solid rgba(15, 22, 38, 0.12);
@@ -453,6 +458,28 @@ body {
 .demo-step.is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.demo-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 13px;
+  background: linear-gradient(135deg, #2f81ff 0%, #8b5cf6 55%, #22c55e 110%);
+  box-shadow: 0 10px 22px rgba(17, 24, 39, 0.12);
+  flex: 0 0 auto;
+}
+
+.demo-step-text {
+  font-size: 16px;
+  font-weight: 750;
+  letter-spacing: -0.01em;
+  color: rgba(17, 24, 39, 0.72);
 }
 
 /* (No responsive max-width adjustment needed now that the label sits in the hero.) */
@@ -909,6 +936,10 @@ body {
 /* --- Benefits section --- */
 .benefits {
   padding: 42px 0 10px;
+}
+
+.benefits .container {
+  max-width: 800px;
 }
 
 .benefits-title {
