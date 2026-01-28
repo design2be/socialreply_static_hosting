@@ -4,8 +4,10 @@
     shell: "[data-demo-shell]",
     track: "[data-demo-feed-track]",
     targetPost: "[data-demo-target-post]",
+    targetComment: "[data-demo-target-comment]",
     replyBtn: "[data-demo-reply-btn]",
     popup: "[data-demo-popup]",
+    stepLabel: "[data-demo-step]",
     cursor: "[data-demo-cursor]",
     generateBtn: "[data-demo-generate]",
     insertBtn: "[data-demo-insert]",
@@ -22,6 +24,13 @@
   const SUGGESTION =
     "Great question—when everything feels important, I anchor on the goal and constraints (customer impact, time, reversibility). Then I rank options by impact vs effort and pick 1–2 “must-win” bets for the week. What’s the one outcome you’d be happiest to ship even if everything else slips?";
 
+  const STEPS = [
+    "1. Scroll your feed (LinkedIn, YouTube, Instagram).",
+    "2. Click Reply on a comment.",
+    "3. Get an AI-generated response in a focused popup.",
+    "4. Click Insert to post it instantly.",
+  ];
+
   const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
   const sleep = (ms) => new Promise((r) => window.setTimeout(r, ms));
@@ -37,6 +46,11 @@
 
   function setCursorVisible(cursor, isVisible) {
     cursor.classList.toggle("is-visible", isVisible);
+  }
+
+  function setStep(stepEl, text) {
+    stepEl.textContent = text ?? "";
+    stepEl.classList.toggle("is-visible", Boolean(text));
   }
 
   function positionCursorOver(cursor, shell, el) {
@@ -83,8 +97,10 @@
       shell,
       track,
       targetPost,
+      targetComment,
       replyBtn,
       popup,
+      stepLabel,
       cursor,
       generateBtn,
       insertBtn,
@@ -97,6 +113,8 @@
     // Reset.
     closePopup(popup);
     setCursorVisible(cursor, false);
+    setStep(stepLabel, STEPS[0]);
+    targetComment.classList.remove("is-responding");
     suggestionCard.classList.remove("is-typing");
     suggestionsCount.textContent = "0";
     suggestionText.textContent = "Generating…";
@@ -131,6 +149,8 @@
     await sleep(550);
 
     // Cursor moves to Reply and clicks.
+    setStep(stepLabel, STEPS[1]);
+    targetComment.classList.add("is-responding");
     setCursorVisible(cursor, true);
     positionCursorOver(cursor, shell, replyBtn);
     await sleep(420);
@@ -142,6 +162,7 @@
     await sleep(420);
 
     // Click Generate, then type the suggestion.
+    setStep(stepLabel, STEPS[2]);
     setPressedClass(generateBtn);
     suggestionCard.classList.add("is-typing");
     suggestionsCount.textContent = "1";
@@ -151,6 +172,7 @@
     await sleep(320);
 
     // Cursor clicks Insert.
+    setStep(stepLabel, STEPS[3]);
     positionCursorOver(cursor, shell, insertBtn);
     await sleep(300);
     setPressedClass(insertBtn);
@@ -159,6 +181,7 @@
     // Popup closes, reply appears.
     closePopup(popup);
     setCursorVisible(cursor, false);
+    targetComment.classList.remove("is-responding");
     insertedReply.querySelector(".reply-text").textContent = SUGGESTION;
     insertedReply.classList.add("is-shown");
     insertedReply.setAttribute("aria-hidden", "false");
@@ -178,8 +201,10 @@
       shell,
       track: shell.querySelector(SELECTORS.track),
       targetPost: shell.querySelector(SELECTORS.targetPost),
+      targetComment: shell.querySelector(SELECTORS.targetComment),
       replyBtn: shell.querySelector(SELECTORS.replyBtn),
       popup: shell.querySelector(SELECTORS.popup),
+      stepLabel: shell.querySelector(SELECTORS.stepLabel),
       cursor: shell.querySelector(SELECTORS.cursor),
       generateBtn: shell.querySelector(SELECTORS.generateBtn),
       insertBtn: shell.querySelector(SELECTORS.insertBtn),
@@ -203,6 +228,8 @@
 
     if (prefersReducedMotion) {
       setStaticFinalState(document.documentElement);
+      setStep(els.stepLabel, STEPS[3]);
+      els.targetComment.classList.add("is-responding");
       // Show the “after” state without motion.
       openPopup(els.popup);
       els.suggestionsCount.textContent = "1";
