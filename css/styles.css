@@ -77,20 +77,15 @@ body {
 
 .demo-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
-  gap: 26px;
+  grid-template-columns: 1fr;
+  gap: 18px;
   align-items: start;
-}
-
-@media (max-width: 940px) {
-  .demo-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* --- Social feed shell --- */
 .social-shell {
   position: relative;
+  width: 100%;
   border-radius: 18px;
   overflow: hidden;
   background: linear-gradient(180deg, #0f1626 0%, #0b1220 65%, #09101c 100%);
@@ -110,6 +105,47 @@ body {
   padding: 12px 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0));
+}
+
+.social-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 392px;
+  gap: 12px;
+  padding: 12px;
+}
+
+@media (max-width: 860px) {
+  .social-stage {
+    grid-template-columns: 1fr;
+  }
+}
+
+.feed-pane {
+  border-radius: 14px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid rgba(15, 22, 38, 0.12);
+}
+
+.plugin-pane {
+  padding: 6px 2px 12px;
+}
+
+.plugin-pane-header {
+  padding: 10px 10px 6px;
+}
+
+.plugin-pane-title {
+  font-size: 13px;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.plugin-pane-subtitle {
+  margin-top: 2px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.56);
 }
 
 .platform-pills {
@@ -146,6 +182,7 @@ body {
   height: 430px;
   overflow: hidden;
   position: relative;
+  background: #ffffff;
 }
 
 .feed-track {
@@ -155,8 +192,8 @@ body {
 
 .post {
   padding: 16px 16px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(15, 22, 38, 0.08);
+  background: #ffffff;
 }
 
 .post--target {
@@ -198,27 +235,27 @@ body {
 .name {
   font-size: 13px;
   font-weight: 650;
-  color: rgba(255, 255, 255, 0.92);
+  color: #121826;
 }
 
 .time {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.58);
+  color: #6b7280;
 }
 
 .post-text {
   margin: 10px 0 0;
   font-size: 13.5px;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.82);
+  color: #1f2937;
 }
 
 .comment {
   margin-top: 12px;
   padding: 12px 12px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(15, 22, 38, 0.1);
+  background: #f6f7fb;
 }
 
 .comment--target {
@@ -230,7 +267,7 @@ body {
   display: inline;
   font-size: 13px;
   line-height: 1.45;
-  color: rgba(255, 255, 255, 0.86);
+  color: #111827;
 }
 
 .comment-author {
@@ -239,7 +276,7 @@ body {
 }
 
 .comment-text {
-  color: rgba(255, 255, 255, 0.82);
+  color: #374151;
 }
 
 .comment-actions {
@@ -247,9 +284,9 @@ body {
 }
 
 .reply-btn {
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(17, 24, 39, 0.14);
+  background: rgba(255, 255, 255, 0.9);
+  color: #111827;
   padding: 7px 10px;
   border-radius: 999px;
   font-size: 12px;
@@ -263,8 +300,8 @@ body {
 }
 
 .reply-btn.is-primary {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(124, 92, 255, 0.12);
+  border-color: rgba(124, 92, 255, 0.3);
 }
 
 .reply-btn.is-pressed {
@@ -278,8 +315,8 @@ body {
   margin-top: 10px;
   padding: 10px 10px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(15, 22, 38, 0.12);
+  background: #ffffff;
   opacity: 0;
   transform: translateY(6px);
   transition:
@@ -295,20 +332,20 @@ body {
 .reply-label {
   font-size: 12px;
   font-weight: 750;
-  color: rgba(255, 255, 255, 0.9);
+  color: #111827;
 }
 
 .reply-text {
   margin-top: 6px;
   font-size: 13px;
   line-height: 1.45;
-  color: rgba(255, 255, 255, 0.84);
+  color: #374151;
 }
 
 .reply-time {
   margin-top: 6px;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.58);
+  color: #6b7280;
 }
 
 /* --- Demo cursor --- */
@@ -366,6 +403,15 @@ body {
   opacity: 1;
   transform: translateY(0) scale(1);
   pointer-events: none; /* this is an autoplay simulation */
+}
+
+.plugin-popup.is-docked {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  left: auto;
+  top: auto;
+  margin: 8px 8px 0 auto;
 }
 
 .popup-header {

@@ -17,7 +17,6 @@
 
   const EASING = {
     scroll: "cubic-bezier(0.2, 0.9, 0.2, 1)",
-    pop: "cubic-bezier(0.2, 0.9, 0.2, 1)",
   };
 
   const SUGGESTION =
@@ -62,25 +61,6 @@
   function closePopup(popup) {
     popup.classList.remove("is-open");
     popup.setAttribute("aria-hidden", "true");
-  }
-
-  function positionPopupNear(popup, shell, anchorEl) {
-    const shellRect = shell.getBoundingClientRect();
-    const a = anchorEl.getBoundingClientRect();
-
-    // Place near the reply button, but keep inside the shell.
-    const desiredX = a.left - shellRect.left + 12;
-    const desiredY = a.top - shellRect.top - 16;
-
-    const popupRect = popup.getBoundingClientRect();
-    const maxX = shellRect.width - popupRect.width - 12;
-    const maxY = shellRect.height - popupRect.height - 12;
-
-    const x = clamp(desiredX, 12, Math.max(12, maxX));
-    const y = clamp(desiredY, 12, Math.max(12, maxY));
-
-    popup.style.left = `${x}px`;
-    popup.style.top = `${y}px`;
   }
 
   async function typeInto(el, text) {
@@ -158,7 +138,6 @@
     await sleep(180);
 
     // Popup opens.
-    positionPopupNear(popup, shell, replyBtn);
     openPopup(popup);
     await sleep(420);
 
