@@ -282,6 +282,8 @@
     await sleep(120, signal);
 
     // Popup opens.
+    // Ensure defaults are visible at the moment the plugin appears.
+    setRadioGroupSelection(intentGroup, intentAgree);
     openPopup(popup);
     await sleep(WAIT_AFTER_POPUP_OPEN_MS, signal);
 
