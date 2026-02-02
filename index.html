@@ -571,14 +571,26 @@
                     <div class="popup-grid">
                       <div class="popup-field">
                         <div class="popup-label">Intent</div>
-                        <div class="popup-switch" role="radiogroup" aria-label="Intent">
-                          <button class="popup-switch-option" type="button" role="radio" aria-checked="false">
+                        <div class="popup-switch" role="radiogroup" aria-label="Intent" data-demo-intent-group>
+                          <button
+                            class="popup-switch-option is-selected"
+                            type="button"
+                            role="radio"
+                            aria-checked="true"
+                            data-demo-intent-agree
+                          >
                             Agree
                           </button>
-                          <button class="popup-switch-option is-selected" type="button" role="radio" aria-checked="true">
+                          <button class="popup-switch-option" type="button" role="radio" aria-checked="false">
                             Follow Up
                           </button>
-                          <button class="popup-switch-option" type="button" role="radio" aria-checked="false">
+                          <button
+                            class="popup-switch-option"
+                            type="button"
+                            role="radio"
+                            aria-checked="false"
+                            data-demo-intent-compliment
+                          >
                             Compliment
                           </button>
                           <button class="popup-switch-option" type="button" role="radio" aria-checked="false">
@@ -588,11 +600,23 @@
                       </div>
                       <div class="popup-field">
                         <div class="popup-label">Tone</div>
-                        <div class="popup-switch" role="radiogroup" aria-label="Tone">
-                          <button class="popup-switch-option is-selected" type="button" role="radio" aria-checked="true">
+                        <div class="popup-switch" role="radiogroup" aria-label="Tone" data-demo-tone-group>
+                          <button
+                            class="popup-switch-option is-selected"
+                            type="button"
+                            role="radio"
+                            aria-checked="true"
+                            data-demo-tone-professional
+                          >
                             Professional
                           </button>
-                          <button class="popup-switch-option" type="button" role="radio" aria-checked="false">
+                          <button
+                            class="popup-switch-option"
+                            type="button"
+                            role="radio"
+                            aria-checked="false"
+                            data-demo-tone-friendly
+                          >
                             Friendly
                           </button>
                           <button class="popup-switch-option" type="button" role="radio" aria-checked="false">

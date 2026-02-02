@@ -10,6 +10,12 @@
     stepLabel: "[data-demo-step]",
     cursor: "[data-demo-cursor]",
     generateBtn: "[data-demo-generate]",
+    intentGroup: "[data-demo-intent-group]",
+    intentAgree: "[data-demo-intent-agree]",
+    intentCompliment: "[data-demo-intent-compliment]",
+    toneGroup: "[data-demo-tone-group]",
+    toneFriendly: "[data-demo-tone-friendly]",
+    toneProfessional: "[data-demo-tone-professional]",
     suggestionLoading: "[data-demo-suggestion-loading]",
     suggestionText: "[data-demo-suggestion-text]",
     suggestionsCount: "[data-demo-suggestions-count]",
@@ -33,6 +39,8 @@
 
   const WAIT_AFTER_SCROLL_MS = 300;
   const WAIT_AFTER_POPUP_OPEN_MS = 300;
+  const WAIT_AFTER_INTENT_SELECT_MS = 600;
+  const WAIT_AFTER_TONE_SELECT_MS = 600;
   const GENERATION_LOADING_MS = 1000;
   const WAIT_AFTER_AI_REPLY_MS = 1500;
   const WAIT_AFTER_MOVE_TO_INSERT_MS = 600;
@@ -113,6 +121,15 @@
     loadingEl.setAttribute("aria-hidden", isLoading ? "false" : "true");
   }
 
+  function setRadioGroupSelection(groupEl, selectedEl) {
+    const radios = Array.from(groupEl?.querySelectorAll('[role="radio"]') ?? []);
+    for (const radio of radios) {
+      const isSelected = radio === selectedEl;
+      radio.classList.toggle("is-selected", isSelected);
+      radio.setAttribute("aria-checked", isSelected ? "true" : "false");
+    }
+  }
+
   async function runOnce(els) {
     const {
       shell,
@@ -124,6 +141,12 @@
       stepLabel,
       cursor,
       generateBtn,
+      intentGroup,
+      intentAgree,
+      intentCompliment,
+      toneGroup,
+      toneFriendly,
+      toneProfessional,
       suggestionLoading,
       suggestionText,
       suggestionsCount,
@@ -144,6 +167,8 @@
     insertedReply.classList.remove("is-shown");
     insertedReply.setAttribute("aria-hidden", "true");
     insertedReply.querySelector(".reply-text").textContent = "";
+    setRadioGroupSelection(intentGroup, intentAgree);
+    setRadioGroupSelection(toneGroup, toneProfessional);
 
     shell.classList.add("is-resetting");
     setTrackOffset(track, 0, 0);
@@ -188,6 +213,22 @@
     // Popup opens.
     openPopup(popup);
     await sleep(WAIT_AFTER_POPUP_OPEN_MS);
+
+    // Select intent (Compliment) from Agree.
+    positionCursorOver(cursor, shell, intentCompliment);
+    await sleep(220);
+    pulseCursorClick(cursor);
+    setPressedClass(intentCompliment);
+    setRadioGroupSelection(intentGroup, intentCompliment);
+    await sleep(WAIT_AFTER_INTENT_SELECT_MS);
+
+    // Select tone (Friendly).
+    positionCursorOver(cursor, shell, toneFriendly);
+    await sleep(220);
+    pulseCursorClick(cursor);
+    setPressedClass(toneFriendly);
+    setRadioGroupSelection(toneGroup, toneFriendly);
+    await sleep(WAIT_AFTER_TONE_SELECT_MS);
 
     // Cursor moves to Generate and clicks.
     setStep(stepLabel, STEPS[2]);
@@ -243,6 +284,12 @@
       stepLabel: document.querySelector(SELECTORS.stepLabel),
       cursor: shell.querySelector(SELECTORS.cursor),
       generateBtn: shell.querySelector(SELECTORS.generateBtn),
+      intentGroup: shell.querySelector(SELECTORS.intentGroup),
+      intentAgree: shell.querySelector(SELECTORS.intentAgree),
+      intentCompliment: shell.querySelector(SELECTORS.intentCompliment),
+      toneGroup: shell.querySelector(SELECTORS.toneGroup),
+      toneFriendly: shell.querySelector(SELECTORS.toneFriendly),
+      toneProfessional: shell.querySelector(SELECTORS.toneProfessional),
       suggestionLoading: shell.querySelector(SELECTORS.suggestionLoading),
       suggestionText: shell.querySelector(SELECTORS.suggestionText),
       suggestionsCount: shell.querySelector(SELECTORS.suggestionsCount),
@@ -266,6 +313,8 @@
       setStaticFinalState(document.documentElement);
       setStep(els.stepLabel, STEPS[3]);
       els.targetComment.classList.add("is-responding");
+      setRadioGroupSelection(els.intentGroup, els.intentCompliment);
+      setRadioGroupSelection(els.toneGroup, els.toneFriendly);
       // Ensure the target comment is visible (roughly top third).
       const viewport = els.shell.querySelector(".feed-viewport");
       const viewportH = viewport?.clientHeight ?? 420;
