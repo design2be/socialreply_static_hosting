@@ -23,7 +23,7 @@
   };
 
   const SUGGESTION =
-    "Great question. I pick 1–2 outcomes that most move the goal, then cut anything that doesn’t support them. If you had to ship just one thing this week, what would it be?";
+    "Great question. I start with safety + calm: teach a “look at me”, a hand target (“touch”), and a quick U-turn for escaping tough moments. Then I build tiny wins with distance and high-value treats. What’s the hardest situation right now—barking, pulling, or jumping?";
 
   const STEPS = [
     "1. Scroll your feed (LinkedIn, YouTube, Instagram).",

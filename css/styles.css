@@ -404,37 +404,6 @@ body {
   color: rgba(17, 24, 39, 0.58);
 }
 
-.post-actions {
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(15, 22, 38, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.post-action {
-  flex: 1 1 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 9px 10px;
-  border-radius: 12px;
-  border: 1px solid rgba(15, 22, 38, 0.08);
-  background: rgba(255, 255, 255, 0.7);
-  color: rgba(17, 24, 39, 0.72);
-  font-size: 13px;
-  font-weight: 700;
-  cursor: default;
-}
-
-.post-action svg {
-  width: 16px;
-  height: 16px;
-}
-
 .comments {
   margin-top: 12px;
   display: grid;
