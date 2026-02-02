@@ -557,18 +557,54 @@
 
                 <section class="plugin-popup is-docked" data-demo-popup aria-hidden="true">
                   <div class="popup-header">
-                    <img class="popup-logo" src="./assets/social_reply_logo_white_h100px.png" alt="SocialReply" />
-                    <button class="popup-close" type="button" aria-label="Close">Close</button>
+                    <img class="popup-logo" src="./assets/social_reply_logo_h100px.png" alt="SocialReply" />
+                    <button class="popup-close" type="button" aria-label="Close">
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path
+                          d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12 5.7 16.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </button>
                   </div>
                   <div class="popup-body">
                     <div class="popup-grid">
                       <div class="popup-field">
                         <div class="popup-label">Intent</div>
-                        <div class="popup-chip">Add insight</div>
+                        <div class="popup-switch" role="radiogroup" aria-label="Intent">
+                          <button class="popup-switch-option" type="button" role="radio" aria-checked="false">
+                            Agree
+                          </button>
+                          <button class="popup-switch-option is-selected" type="button" role="radio" aria-checked="true">
+                            Follow Up
+                          </button>
+                          <button class="popup-switch-option" type="button" role="radio" aria-checked="false">
+                            Compliment
+                          </button>
+                          <button class="popup-switch-option" type="button" role="radio" aria-checked="false">
+                            Respectfully disagree
+                          </button>
+                        </div>
                       </div>
                       <div class="popup-field">
                         <div class="popup-label">Tone</div>
-                        <div class="popup-chip">Professional</div>
+                        <div class="popup-switch" role="radiogroup" aria-label="Tone">
+                          <button class="popup-switch-option is-selected" type="button" role="radio" aria-checked="true">
+                            Professional
+                          </button>
+                          <button class="popup-switch-option" type="button" role="radio" aria-checked="false">
+                            Friendly
+                          </button>
+                          <button class="popup-switch-option" type="button" role="radio" aria-checked="false">
+                            Confident
+                          </button>
+                          <button class="popup-switch-option" type="button" role="radio" aria-checked="false">
+                            Curious
+                          </button>
+                          <button class="popup-switch-option" type="button" role="radio" aria-checked="false">
+                            Extra
+                          </button>
+                        </div>
                       </div>
                     </div>
 
