@@ -48,7 +48,31 @@
 
   const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
-  const sleep = (ms) => new Promise((r) => window.setTimeout(r, ms));
+  function makeAbortError() {
+    // DOMException isn't available in some older browsers; keep it simple.
+    const err = new Error("Aborted");
+    err.name = "AbortError";
+    return err;
+  }
+
+  function isAbortError(err) {
+    return err?.name === "AbortError";
+  }
+
+  const sleep = (ms, signal) =>
+    new Promise((resolve, reject) => {
+      if (signal?.aborted) return reject(makeAbortError());
+      const id = window.setTimeout(resolve, ms);
+      if (!signal) return;
+      signal.addEventListener(
+        "abort",
+        () => {
+          window.clearTimeout(id);
+          reject(makeAbortError());
+        },
+        { once: true }
+      );
+    });
 
   function clamp(n, min, max) {
     return Math.min(max, Math.max(min, n));
@@ -66,6 +90,69 @@
   function pulseCursorClick(cursor) {
     cursor.classList.add("is-clicking");
     window.setTimeout(() => cursor.classList.remove("is-clicking"), 160);
+  }
+
+  function resetDemoState(els) {
+    const {
+      shell,
+      track,
+      targetComment,
+      replyBtn,
+      popup,
+      stepLabel,
+      cursor,
+      generateBtn,
+      intentGroup,
+      intentAgree,
+      toneGroup,
+      toneProfessional,
+      suggestionLoading,
+      suggestionText,
+      suggestionsCount,
+      suggestionCard,
+      insertedReply,
+    } = els;
+
+    // Clear UI state.
+    closePopup(popup);
+    setCursorVisible(cursor, false);
+    cursor.classList.remove("is-clicking");
+    cursor.style.removeProperty("--cursor-x");
+    cursor.style.removeProperty("--cursor-y");
+
+    setStep(stepLabel, STEPS[0]);
+    targetComment.classList.remove("is-responding");
+
+    // Clear any "pressed" artifacts if a cycle was aborted mid-click.
+    replyBtn.classList.remove("is-pressed");
+    generateBtn.classList.remove("is-pressed");
+    Array.from(intentGroup?.querySelectorAll(".popup-switch-option.is-pressed") ?? []).forEach((n) =>
+      n.classList.remove("is-pressed")
+    );
+    Array.from(toneGroup?.querySelectorAll(".popup-switch-option.is-pressed") ?? []).forEach((n) =>
+      n.classList.remove("is-pressed")
+    );
+    suggestionCard.classList.remove("is-pressed");
+
+    // Suggestions area.
+    suggestionCard.classList.remove("is-loading", "is-ready");
+    setLoading(suggestionLoading, false);
+    suggestionsCount.textContent = "0";
+    suggestionText.textContent = "";
+
+    // Inserted reply bubble.
+    insertedReply.classList.remove("is-shown");
+    insertedReply.setAttribute("aria-hidden", "true");
+    insertedReply.querySelector(".reply-text").textContent = "";
+
+    // Radio selections back to defaults.
+    setRadioGroupSelection(intentGroup, intentAgree);
+    setRadioGroupSelection(toneGroup, toneProfessional);
+
+    // Feed scroll reset.
+    shell.classList.add("is-resetting");
+    track.style.transition = "none";
+    track.style.transform = "translate3d(0, 0px, 0)";
   }
 
   function setStep(stepEl, text) {
@@ -130,7 +217,7 @@
     }
   }
 
-  async function runOnce(els) {
+  async function runOnce(els, signal) {
     const {
       shell,
       track,
@@ -155,27 +242,11 @@
     } = els;
 
     // Reset.
-    closePopup(popup);
-    setCursorVisible(cursor, false);
-    setStep(stepLabel, STEPS[0]);
-    targetComment.classList.remove("is-responding");
-    suggestionCard.classList.remove("is-loading");
-    suggestionCard.classList.remove("is-ready");
-    setLoading(suggestionLoading, false);
-    suggestionsCount.textContent = "0";
-    suggestionText.textContent = "";
-    insertedReply.classList.remove("is-shown");
-    insertedReply.setAttribute("aria-hidden", "true");
-    insertedReply.querySelector(".reply-text").textContent = "";
-    setRadioGroupSelection(intentGroup, intentAgree);
-    setRadioGroupSelection(toneGroup, toneProfessional);
-
-    shell.classList.add("is-resetting");
-    setTrackOffset(track, 0, 0);
+    resetDemoState(els);
     // Keep the reset tight so timing matches the scripted steps.
-    await sleep(60);
+    await sleep(60, signal);
     shell.classList.remove("is-resetting");
-    await sleep(0);
+    await sleep(0, signal);
 
     // Stop-and-go scrolling (scripted).
     const viewport = shell.querySelector(".feed-viewport");
@@ -185,8 +256,8 @@
     // Step 1: scroll down once.
     const scroll1Offset = clamp(viewportH * 0.4, 0, maxOffset);
     setTrackOffset(track, scroll1Offset, 650);
-    await sleep(670);
-    await sleep(WAIT_AFTER_SCROLL_MS);
+    await sleep(670, signal);
+    await sleep(WAIT_AFTER_SCROLL_MS, signal);
 
     // Step 2: scroll down twice so Mina’s comment sits in the top third.
     // Keep the headline on "Scroll your feed".
@@ -195,45 +266,45 @@
     const desiredOffset = clamp(commentTop - viewportH * 0.25, 0, maxOffset);
     const scroll2aOffset = clamp(scroll1Offset + (desiredOffset - scroll1Offset) * 0.55, 0, maxOffset);
     setTrackOffset(track, scroll2aOffset, 520);
-    await sleep(540);
+    await sleep(540, signal);
     setTrackOffset(track, desiredOffset, 520);
-    await sleep(540);
-    await sleep(WAIT_AFTER_SCROLL_MS);
+    await sleep(540, signal);
+    await sleep(WAIT_AFTER_SCROLL_MS, signal);
 
     // Cursor moves to Reply and clicks.
     setStep(stepLabel, STEPS[1]);
     targetComment.classList.add("is-responding");
     setCursorVisible(cursor, true);
     positionCursorOver(cursor, shell, replyBtn);
-    await sleep(260);
+    await sleep(260, signal);
     pulseCursorClick(cursor);
     setPressedClass(replyBtn);
-    await sleep(120);
+    await sleep(120, signal);
 
     // Popup opens.
     openPopup(popup);
-    await sleep(WAIT_AFTER_POPUP_OPEN_MS);
+    await sleep(WAIT_AFTER_POPUP_OPEN_MS, signal);
 
     // Select intent (Compliment) from Agree.
     positionCursorOver(cursor, shell, intentCompliment);
-    await sleep(220);
+    await sleep(220, signal);
     pulseCursorClick(cursor);
     setPressedClass(intentCompliment);
     setRadioGroupSelection(intentGroup, intentCompliment);
-    await sleep(WAIT_AFTER_INTENT_SELECT_MS);
+    await sleep(WAIT_AFTER_INTENT_SELECT_MS, signal);
 
     // Select tone (Friendly).
     positionCursorOver(cursor, shell, toneFriendly);
-    await sleep(220);
+    await sleep(220, signal);
     pulseCursorClick(cursor);
     setPressedClass(toneFriendly);
     setRadioGroupSelection(toneGroup, toneFriendly);
-    await sleep(WAIT_AFTER_TONE_SELECT_MS);
+    await sleep(WAIT_AFTER_TONE_SELECT_MS, signal);
 
     // Cursor moves to Generate and clicks.
     setStep(stepLabel, STEPS[2]);
     positionCursorOver(cursor, shell, generateBtn);
-    await sleep(240);
+    await sleep(240, signal);
     pulseCursorClick(cursor);
     setPressedClass(generateBtn);
 
@@ -243,31 +314,31 @@
     suggestionCard.classList.add("is-loading");
     suggestionCard.classList.remove("is-ready");
     setLoading(suggestionLoading, true);
-    await sleep(GENERATION_LOADING_MS);
+    await sleep(GENERATION_LOADING_MS, signal);
     setLoading(suggestionLoading, false);
     suggestionCard.classList.remove("is-loading");
     suggestionText.textContent = SUGGESTION;
     suggestionCard.classList.add("is-ready");
-    await sleep(WAIT_AFTER_AI_REPLY_MS);
+    await sleep(WAIT_AFTER_AI_REPLY_MS, signal);
 
     // Step 5: show response and move cursor to Insert.
     // Keep the headline on "AI-generated reply" until we insert.
     setStep(stepLabel, STEPS[2]);
     positionCursorOver(cursor, shell, suggestionCard);
-    await sleep(WAIT_AFTER_MOVE_TO_INSERT_MS);
+    await sleep(WAIT_AFTER_MOVE_TO_INSERT_MS, signal);
 
     // Step 6: click suggestion (inserts), close plugin, show posted reply.
     setStep(stepLabel, STEPS[3]);
     pulseCursorClick(cursor);
     setPressedClass(suggestionCard);
-    await sleep(160);
+    await sleep(160, signal);
 
     closePopup(popup);
     setCursorVisible(cursor, false);
     insertedReply.querySelector(".reply-text").textContent = SUGGESTION;
     insertedReply.classList.add("is-shown");
     insertedReply.setAttribute("aria-hidden", "false");
-    await sleep(WAIT_AFTER_POST_MS);
+    await sleep(WAIT_AFTER_POST_MS, signal);
   }
 
   function getElements() {
@@ -305,9 +376,14 @@
     return els;
   }
 
+  let hasStarted = false;
+
   async function start() {
     const els = getElements();
     if (!els) return;
+
+    if (hasStarted) return;
+    hasStarted = true;
 
     if (prefersReducedMotion) {
       setStaticFinalState(document.documentElement);
@@ -336,30 +412,66 @@
       return;
     }
 
-    let running = true;
-
-    const stopIfHidden = () => {
-      if (document.hidden) running = false;
-      if (!document.hidden && !running) {
-        running = true;
-        loop();
-      }
+    // Ensure there is only one loop instance at a time (visibility changes can otherwise
+    // re-enter `loop()` while an old `runOnce()` is still mid-flight).
+    const state = {
+      shouldRun: true,
+      loopPromise: null,
+      cycleController: null,
     };
 
-    document.addEventListener("visibilitychange", stopIfHidden);
-    window.addEventListener("pagehide", () => {
-      running = false;
-    });
+    function abortCycleAndReset() {
+      state.cycleController?.abort();
+      resetDemoState(els);
+      // Ensure we don't remain dimmed if a cycle is aborted mid-reset.
+      window.setTimeout(() => els.shell.classList.remove("is-resetting"), 0);
+    }
 
-    async function loop() {
-      // Loop until tab is hidden (then resume).
-      while (running) {
-        await runOnce(els);
-        await sleep(0);
+    function pause() {
+      state.shouldRun = false;
+      abortCycleAndReset();
+    }
+
+    function resume() {
+      state.shouldRun = true;
+      ensureLoop();
+    }
+
+    function onVisibilityChange() {
+      if (document.hidden) pause();
+      else resume();
+    }
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pagehide", () => pause());
+
+    async function runCycle() {
+      state.cycleController = new AbortController();
+      try {
+        await runOnce(els, state.cycleController.signal);
+      } catch (err) {
+        if (!isAbortError(err)) throw err;
+      } finally {
+        state.cycleController = null;
       }
     }
 
-    loop();
+    async function loop() {
+      while (state.shouldRun) {
+        await runCycle();
+        if (!state.shouldRun) break;
+        await sleep(0);
+      }
+      state.loopPromise = null;
+    }
+
+    function ensureLoop() {
+      if (state.loopPromise) return;
+      state.loopPromise = loop();
+    }
+
+    // Start immediately, unless we're already hidden (in which case we'll start on resume).
+    if (!document.hidden) ensureLoop();
   }
 
   if (document.readyState === "loading") {
