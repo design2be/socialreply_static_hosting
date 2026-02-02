@@ -150,9 +150,10 @@
 
     shell.classList.add("is-resetting");
     setTrackOffset(track, 0, 0);
-    await sleep(250);
+    // Keep the reset tight so timing matches the scripted steps.
+    await sleep(60);
     shell.classList.remove("is-resetting");
-    await sleep(300);
+    await sleep(0);
 
     // Stop-and-go scrolling (scripted).
     const viewport = shell.querySelector(".feed-viewport");
@@ -306,7 +307,7 @@
       // Loop until tab is hidden (then resume).
       while (running) {
         await runOnce(els);
-        await sleep(50);
+        await sleep(0);
       }
     }
 
