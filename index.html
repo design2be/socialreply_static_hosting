@@ -629,14 +629,20 @@
                           <div class="suggestion-spinner" aria-hidden="true"></div>
                           <div class="suggestion-loading-label">Generating…</div>
                         </div>
-                        <div class="suggestion-text" data-demo-suggestion-text></div>
-                        <div class="suggestion-primary-actions">
-                          <button class="popup-btn popup-btn--primary" type="button" data-demo-insert>Insert</button>
+                        <div class="suggestion-content" role="button" tabindex="0" aria-label="Insert suggestion">
+                          <div class="suggestion-text" data-demo-suggestion-text></div>
+                          <div class="suggestion-add-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+                              <path
+                                d="M12 5a1 1 0 0 1 1 1v5h5a1 1 0 1 1 0 2h-5v5a1 1 0 1 1-2 0v-5H6a1 1 0 1 1 0-2h5V6a1 1 0 0 1 1-1Z"
+                                fill="currentColor"
+                              />
+                            </svg>
+                          </div>
                         </div>
                       </div>
                     </div>
 
-                    <div class="popup-tip">Tip: click suggestion to insert it into the active comment box.</div>
                   </div>
                 </section>
               </div>

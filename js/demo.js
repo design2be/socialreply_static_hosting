@@ -10,7 +10,6 @@
     stepLabel: "[data-demo-step]",
     cursor: "[data-demo-cursor]",
     generateBtn: "[data-demo-generate]",
-    insertBtn: "[data-demo-insert]",
     suggestionLoading: "[data-demo-suggestion-loading]",
     suggestionText: "[data-demo-suggestion-text]",
     suggestionsCount: "[data-demo-suggestions-count]",
@@ -125,7 +124,6 @@
       stepLabel,
       cursor,
       generateBtn,
-      insertBtn,
       suggestionLoading,
       suggestionText,
       suggestionsCount,
@@ -214,13 +212,13 @@
     // Step 5: show response and move cursor to Insert.
     // Keep the headline on "AI-generated reply" until we insert.
     setStep(stepLabel, STEPS[2]);
-    positionCursorOver(cursor, shell, insertBtn);
+    positionCursorOver(cursor, shell, suggestionCard);
     await sleep(WAIT_AFTER_MOVE_TO_INSERT_MS);
 
-    // Step 6: click Insert, close plugin, show posted reply.
+    // Step 6: click suggestion (inserts), close plugin, show posted reply.
     setStep(stepLabel, STEPS[3]);
     pulseCursorClick(cursor);
-    setPressedClass(insertBtn);
+    setPressedClass(suggestionCard);
     await sleep(160);
 
     closePopup(popup);
@@ -245,7 +243,6 @@
       stepLabel: document.querySelector(SELECTORS.stepLabel),
       cursor: shell.querySelector(SELECTORS.cursor),
       generateBtn: shell.querySelector(SELECTORS.generateBtn),
-      insertBtn: shell.querySelector(SELECTORS.insertBtn),
       suggestionLoading: shell.querySelector(SELECTORS.suggestionLoading),
       suggestionText: shell.querySelector(SELECTORS.suggestionText),
       suggestionsCount: shell.querySelector(SELECTORS.suggestionsCount),
