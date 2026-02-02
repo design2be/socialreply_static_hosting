@@ -26,17 +26,19 @@
     "Great question. I start with safety + calm: teach a “look at me”, a hand target (“touch”), and a quick U-turn for escaping tough moments. Then I build tiny wins with distance and high-value treats. What’s the hardest situation right now—barking, pulling, or jumping?";
 
   const STEPS = [
-    "1. Scroll your feed (LinkedIn, YouTube, Instagram).",
-    "2. Click Reply on a comment.",
-    "3. Get an AI-generated response in a focused popup.",
-    "4. Click Insert to post it instantly.",
+    "1. Scroll down once.",
+    "2. Scroll down twice to Mina’s comment.",
+    "3. Click Reply on Mina’s comment (open plugin).",
+    "4. Click Generate.",
+    "5. Show response and move to Insert.",
+    "6. Click Insert (post + close plugin).",
   ];
 
-  // Keep the popup/tool visible longer.
-  const POPUP_BEFORE_GENERATE_MS = 850;
+  const WAIT_AFTER_SCROLL_MS = 300;
+  const WAIT_AFTER_POPUP_OPEN_MS = 300;
   const GENERATION_LOADING_MS = 1000;
-  const AFTER_GENERATION_REVEAL_PAUSE_MS = 900;
-  const AFTER_INSERT_PAUSE_MS = 600;
+  const WAIT_AFTER_MOVE_TO_INSERT_MS = 600;
+  const WAIT_AFTER_POST_MS = 2000;
 
   const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
@@ -87,6 +89,12 @@
   function setTrackOffset(track, px, durationMs) {
     track.style.transition = durationMs ? `transform ${durationMs}ms ${EASING.scroll}` : "none";
     track.style.transform = `translate3d(0, ${-px}px, 0)`;
+  }
+
+  function getTopWithinTrack(el, track) {
+    const elRect = el.getBoundingClientRect();
+    const trackRect = track.getBoundingClientRect();
+    return elRect.top - trackRect.top;
   }
 
   function openPopup(popup) {
@@ -146,36 +154,46 @@
     shell.classList.remove("is-resetting");
     await sleep(300);
 
-    // Stop-and-go scrolling (approximate).
+    // Stop-and-go scrolling (scripted).
     const viewport = shell.querySelector(".feed-viewport");
     const viewportH = viewport?.clientHeight ?? 420;
     const maxOffset = Math.max(0, track.scrollHeight - viewportH);
 
-    const targetTop = targetPost.offsetTop;
-    // Keep the target comment comfortably in view with space below for the inserted reply.
-    const targetOffset = clamp(targetTop - 60, 0, maxOffset);
+    // Step 1: scroll down once.
+    const scroll1Offset = clamp(viewportH * 0.4, 0, maxOffset);
+    setTrackOffset(track, scroll1Offset, 650);
+    await sleep(670);
+    await sleep(WAIT_AFTER_SCROLL_MS);
 
-    setTrackOffset(track, targetOffset, 950);
-    await sleep(1030);
-    await sleep(550);
+    // Step 2: scroll down twice so Mina’s comment sits in the top third.
+    setStep(stepLabel, STEPS[1]);
+    const commentTop = getTopWithinTrack(targetComment, track);
+    const desiredOffset = clamp(commentTop - viewportH * 0.25, 0, maxOffset);
+    const scroll2aOffset = clamp(scroll1Offset + (desiredOffset - scroll1Offset) * 0.55, 0, maxOffset);
+    setTrackOffset(track, scroll2aOffset, 520);
+    await sleep(540);
+    setTrackOffset(track, desiredOffset, 520);
+    await sleep(540);
+    await sleep(WAIT_AFTER_SCROLL_MS);
 
     // Cursor moves to Reply and clicks.
-    setStep(stepLabel, STEPS[1]);
+    setStep(stepLabel, STEPS[2]);
     targetComment.classList.add("is-responding");
     setCursorVisible(cursor, true);
     positionCursorOver(cursor, shell, replyBtn);
-    await sleep(420);
+    await sleep(260);
+    pulseCursorClick(cursor);
     setPressedClass(replyBtn);
-    await sleep(180);
+    await sleep(120);
 
     // Popup opens.
     openPopup(popup);
-    await sleep(POPUP_BEFORE_GENERATE_MS);
+    await sleep(WAIT_AFTER_POPUP_OPEN_MS);
 
     // Cursor moves to Generate and clicks.
-    setStep(stepLabel, STEPS[2]);
+    setStep(stepLabel, STEPS[3]);
     positionCursorOver(cursor, shell, generateBtn);
-    await sleep(420);
+    await sleep(240);
     pulseCursorClick(cursor);
     setPressedClass(generateBtn);
 
@@ -190,29 +208,24 @@
     suggestionCard.classList.remove("is-loading");
     suggestionText.textContent = SUGGESTION;
     suggestionCard.classList.add("is-ready");
-    await sleep(AFTER_GENERATION_REVEAL_PAUSE_MS);
 
-    // Cursor clicks Insert.
-    setStep(stepLabel, STEPS[3]);
+    // Step 5: show response and move cursor to Insert.
+    setStep(stepLabel, STEPS[4]);
     positionCursorOver(cursor, shell, insertBtn);
-    await sleep(420);
+    await sleep(WAIT_AFTER_MOVE_TO_INSERT_MS);
+
+    // Step 6: click Insert, close plugin, show posted reply.
+    setStep(stepLabel, STEPS[5]);
     pulseCursorClick(cursor);
     setPressedClass(insertBtn);
     await sleep(160);
 
-    // Popup closes, reply appears.
-    await sleep(AFTER_INSERT_PAUSE_MS);
     closePopup(popup);
     setCursorVisible(cursor, false);
     insertedReply.querySelector(".reply-text").textContent = SUGGESTION;
     insertedReply.classList.add("is-shown");
     insertedReply.setAttribute("aria-hidden", "false");
-    await sleep(1100);
-
-    // Keep scrolling a little, then loop.
-    setTrackOffset(track, clamp(targetOffset + 220, 0, maxOffset), 900);
-    await sleep(980);
-    await sleep(650);
+    await sleep(WAIT_AFTER_POST_MS);
   }
 
   function getElements() {
@@ -251,15 +264,23 @@
 
     if (prefersReducedMotion) {
       setStaticFinalState(document.documentElement);
-      setStep(els.stepLabel, STEPS[3]);
+      setStep(els.stepLabel, STEPS[5]);
       els.targetComment.classList.add("is-responding");
+      // Ensure the target comment is visible (roughly top third).
+      const viewport = els.shell.querySelector(".feed-viewport");
+      const viewportH = viewport?.clientHeight ?? 420;
+      const maxOffset = Math.max(0, els.track.scrollHeight - viewportH);
+      const commentTop = getTopWithinTrack(els.targetComment, els.track);
+      const desiredOffset = clamp(commentTop - viewportH * 0.25, 0, maxOffset);
+      setTrackOffset(els.track, desiredOffset, 0);
+
       // Show the “after” state without motion.
-      openPopup(els.popup);
       els.suggestionsCount.textContent = "1";
       setLoading(els.suggestionLoading, false);
       els.suggestionCard.classList.remove("is-loading");
       els.suggestionText.textContent = SUGGESTION;
       els.suggestionCard.classList.add("is-ready");
+      closePopup(els.popup);
       els.insertedReply.querySelector(".reply-text").textContent = SUGGESTION;
       els.insertedReply.classList.add("is-shown");
       els.insertedReply.setAttribute("aria-hidden", "false");
@@ -285,7 +306,7 @@
       // Loop until tab is hidden (then resume).
       while (running) {
         await runOnce(els);
-        await sleep(800);
+        await sleep(50);
       }
     }
 
