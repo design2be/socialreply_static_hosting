@@ -26,17 +26,16 @@
     "Great question. I start with safety + calm: teach a “look at me”, a hand target (“touch”), and a quick U-turn for escaping tough moments. Then I build tiny wins with distance and high-value treats. What’s the hardest situation right now—barking, pulling, or jumping?";
 
   const STEPS = [
-    "1. Scroll down once.",
-    "2. Scroll down twice to Mina’s comment.",
-    "3. Click Reply on Mina’s comment (open plugin).",
-    "4. Click Generate.",
-    "5. Show response and move to Insert.",
-    "6. Click Insert (post + close plugin).",
+    "1. Scroll your feed (LinkedIn, YouTube, Instagram).",
+    "2. Click Reply on a comment.",
+    "3. Get an AI-generated reply",
+    "4. Click Insert to post it instantly",
   ];
 
   const WAIT_AFTER_SCROLL_MS = 300;
   const WAIT_AFTER_POPUP_OPEN_MS = 300;
   const GENERATION_LOADING_MS = 1000;
+  const WAIT_AFTER_AI_REPLY_MS = 1500;
   const WAIT_AFTER_MOVE_TO_INSERT_MS = 600;
   const WAIT_AFTER_POST_MS = 2000;
 
@@ -167,7 +166,8 @@
     await sleep(WAIT_AFTER_SCROLL_MS);
 
     // Step 2: scroll down twice so Mina’s comment sits in the top third.
-    setStep(stepLabel, STEPS[1]);
+    // Keep the headline on "Scroll your feed".
+    setStep(stepLabel, STEPS[0]);
     const commentTop = getTopWithinTrack(targetComment, track);
     const desiredOffset = clamp(commentTop - viewportH * 0.25, 0, maxOffset);
     const scroll2aOffset = clamp(scroll1Offset + (desiredOffset - scroll1Offset) * 0.55, 0, maxOffset);
@@ -178,7 +178,7 @@
     await sleep(WAIT_AFTER_SCROLL_MS);
 
     // Cursor moves to Reply and clicks.
-    setStep(stepLabel, STEPS[2]);
+    setStep(stepLabel, STEPS[1]);
     targetComment.classList.add("is-responding");
     setCursorVisible(cursor, true);
     positionCursorOver(cursor, shell, replyBtn);
@@ -192,7 +192,7 @@
     await sleep(WAIT_AFTER_POPUP_OPEN_MS);
 
     // Cursor moves to Generate and clicks.
-    setStep(stepLabel, STEPS[3]);
+    setStep(stepLabel, STEPS[2]);
     positionCursorOver(cursor, shell, generateBtn);
     await sleep(240);
     pulseCursorClick(cursor);
@@ -209,14 +209,16 @@
     suggestionCard.classList.remove("is-loading");
     suggestionText.textContent = SUGGESTION;
     suggestionCard.classList.add("is-ready");
+    await sleep(WAIT_AFTER_AI_REPLY_MS);
 
     // Step 5: show response and move cursor to Insert.
-    setStep(stepLabel, STEPS[4]);
+    // Keep the headline on "AI-generated reply" until we insert.
+    setStep(stepLabel, STEPS[2]);
     positionCursorOver(cursor, shell, insertBtn);
     await sleep(WAIT_AFTER_MOVE_TO_INSERT_MS);
 
     // Step 6: click Insert, close plugin, show posted reply.
-    setStep(stepLabel, STEPS[5]);
+    setStep(stepLabel, STEPS[3]);
     pulseCursorClick(cursor);
     setPressedClass(insertBtn);
     await sleep(160);
@@ -265,7 +267,7 @@
 
     if (prefersReducedMotion) {
       setStaticFinalState(document.documentElement);
-      setStep(els.stepLabel, STEPS[5]);
+      setStep(els.stepLabel, STEPS[3]);
       els.targetComment.classList.add("is-responding");
       // Ensure the target comment is visible (roughly top third).
       const viewport = els.shell.querySelector(".feed-viewport");
