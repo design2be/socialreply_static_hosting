@@ -48,6 +48,9 @@
 
   const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
+  const DEMO_HOVER_CLASS = "is-demo-hover";
+  let demoHoverEl = null;
+
   function makeAbortError() {
     // DOMException isn't available in some older browsers; keep it simple.
     const err = new Error("Aborted");
@@ -76,6 +79,13 @@
 
   function clamp(n, min, max) {
     return Math.min(max, Math.max(min, n));
+  }
+
+  function setDemoHover(el) {
+    if (demoHoverEl === el) return;
+    if (demoHoverEl) demoHoverEl.classList.remove(DEMO_HOVER_CLASS);
+    demoHoverEl = el ?? null;
+    if (demoHoverEl) demoHoverEl.classList.add(DEMO_HOVER_CLASS);
   }
 
   function setPressedClass(el) {
@@ -116,6 +126,7 @@
     // Clear UI state.
     closePopup(popup);
     setCursorVisible(cursor, false);
+    setDemoHover(null);
     cursor.classList.remove("is-clicking");
     cursor.style.removeProperty("--cursor-x");
     cursor.style.removeProperty("--cursor-y");
@@ -177,6 +188,7 @@
     const y = rect.top - shellRect.top + rect.height * 0.7;
     cursor.style.setProperty("--cursor-x", `${x}px`);
     cursor.style.setProperty("--cursor-y", `${y}px`);
+    setDemoHover(el);
   }
 
   function setTrackOffset(track, px, durationMs) {
@@ -337,6 +349,7 @@
 
     closePopup(popup);
     setCursorVisible(cursor, false);
+    setDemoHover(null);
     insertedReply.querySelector(".reply-text").textContent = SUGGESTION;
     insertedReply.classList.add("is-shown");
     insertedReply.setAttribute("aria-hidden", "false");

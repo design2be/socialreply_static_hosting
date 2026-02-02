@@ -530,6 +530,14 @@ body {
     box-shadow 120ms ease;
 }
 
+.reply-btn.is-demo-hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.86);
+  border-color: rgba(47, 129, 255, 0.28);
+  color: rgba(17, 24, 39, 0.86);
+  box-shadow: 0 12px 22px rgba(17, 24, 39, 0.1);
+}
+
 .reply-btn.is-pressed {
   transform: scale(0.98);
   background: rgba(17, 24, 39, 0.06);
@@ -867,6 +875,11 @@ body {
   color: rgba(17, 24, 39, 0.92);
 }
 
+.popup-switch-option.is-demo-hover {
+  background: rgba(15, 22, 38, 0.06);
+  color: rgba(17, 24, 39, 0.92);
+}
+
 .popup-switch-option.is-selected {
   background: rgba(47, 129, 255, 0.14);
   color: rgba(29, 78, 216, 0.95);
@@ -983,6 +996,14 @@ body {
   filter: saturate(1.02);
 }
 
+.popup-btn.is-demo-hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 14px 28px rgba(17, 24, 39, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.65) inset;
+  filter: saturate(1.02);
+}
+
 .popup-btn:active {
   transform: translateY(0);
   box-shadow:
@@ -998,6 +1019,15 @@ body {
 .popup-btn--primary {
   background: linear-gradient(90deg, #2f81ff 0%, #8b5cf6 100%);
   color: #ffffff;
+}
+
+.popup-btn--primary:hover,
+.popup-btn--primary.is-demo-hover {
+  filter: brightness(1.06) saturate(1.06);
+  box-shadow:
+    0 16px 34px rgba(17, 24, 39, 0.14),
+    0 0 0 3px rgba(47, 129, 255, 0.14),
+    0 0 28px rgba(139, 92, 246, 0.22);
 }
 
 .popup-btn--danger {
@@ -1064,6 +1094,14 @@ body {
     0 0 0 3px rgba(47, 129, 255, 0.12);
 }
 
+.suggestion-card.is-ready.is-demo-hover {
+  background: rgba(47, 129, 255, 0.06);
+  border-color: rgba(47, 129, 255, 0.28);
+  box-shadow:
+    0 16px 34px rgba(17, 24, 39, 0.12),
+    0 0 0 3px rgba(47, 129, 255, 0.12);
+}
+
 .suggestion-card.is-ready .suggestion-content:focus-visible {
   outline: 3px solid rgba(47, 129, 255, 0.28);
   outline-offset: 2px;
@@ -1089,6 +1127,11 @@ body {
 }
 
 .suggestion-card.is-ready:hover .suggestion-add-icon {
+  color: rgba(29, 78, 216, 0.9);
+  background: rgba(47, 129, 255, 0.12);
+}
+
+.suggestion-card.is-ready.is-demo-hover .suggestion-add-icon {
   color: rgba(29, 78, 216, 0.9);
   background: rgba(47, 129, 255, 0.12);
 }
