@@ -10,6 +10,8 @@
     stepLabel: "[data-demo-step]",
     cursor: "[data-demo-cursor]",
     generateBtn: "[data-demo-generate]",
+    generateSpinner: "[data-demo-generate-spinner]",
+    generateLabel: "[data-demo-generate-label]",
     intentGroup: "[data-demo-intent-group]",
     intentAgree: "[data-demo-intent-agree]",
     intentCompliment: "[data-demo-intent-compliment]",
@@ -18,8 +20,8 @@
     toneProfessional: "[data-demo-tone-professional]",
     suggestionLoading: "[data-demo-suggestion-loading]",
     suggestionText: "[data-demo-suggestion-text]",
-    suggestionsCount: "[data-demo-suggestions-count]",
     suggestionCard: "[data-demo-suggestion-card]",
+    suggestionsSection: "[data-demo-suggestions]",
     insertedReply: "[data-demo-inserted-reply]",
   };
 
@@ -45,6 +47,9 @@
   const WAIT_AFTER_AI_REPLY_MS = 1500;
   const WAIT_AFTER_MOVE_TO_INSERT_MS = 600;
   const WAIT_AFTER_POST_MS = 2000;
+  const TYPE_REPLY_MIN_MS = 650;
+  const TYPE_REPLY_MAX_MS = 2200;
+  const TYPE_REPLY_MS_PER_CHAR = 14;
 
   const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 
@@ -81,6 +86,32 @@
     return Math.min(max, Math.max(min, n));
   }
 
+  async function typeText(el, text, durationMs, signal) {
+    if (!el) return;
+    const fullText = String(text ?? "");
+    const totalMs = clamp(Number(durationMs) || 0, 0, 60_000);
+    if (!fullText || totalMs <= 0) {
+      el.textContent = fullText;
+      return;
+    }
+
+    const start = performance.now();
+    let lastLen = 0;
+    el.textContent = "";
+
+    while (lastLen < fullText.length) {
+      const elapsed = performance.now() - start;
+      const t = clamp(elapsed / totalMs, 0, 1);
+      const nextLen = t >= 1 ? fullText.length : Math.max(lastLen, Math.floor(fullText.length * t));
+      if (nextLen !== lastLen) {
+        el.textContent = fullText.slice(0, nextLen);
+        lastLen = nextLen;
+      }
+      if (lastLen >= fullText.length) break;
+      await sleep(30, signal);
+    }
+  }
+
   function setDemoHover(el) {
     if (demoHoverEl === el) return;
     if (demoHoverEl) demoHoverEl.classList.remove(DEMO_HOVER_CLASS);
@@ -102,6 +133,33 @@
     window.setTimeout(() => cursor.classList.remove("is-clicking"), 160);
   }
 
+  function resetPluginToolState(els) {
+    const {
+      popup,
+      intentGroup,
+      intentAgree,
+      toneGroup,
+      toneProfessional,
+      generateLabel,
+      generateSpinner,
+      suggestionLoading,
+      suggestionText,
+      suggestionCard,
+      suggestionsSection,
+    } = els;
+
+    closePopup(popup);
+
+    // Reset plugin UI back to "fresh load" defaults.
+    setRadioGroupSelection(intentGroup, intentAgree);
+    setRadioGroupSelection(toneGroup, toneProfessional);
+    setGenerateButtonLoading(generateLabel, generateSpinner, false);
+    suggestionCard.classList.remove("is-loading", "is-ready", "is-pressed");
+    setLoading(suggestionLoading, false);
+    suggestionText.textContent = "";
+    setSuggestionsVisible(suggestionsSection, false);
+  }
+
   function resetDemoState(els) {
     const {
       shell,
@@ -116,15 +174,11 @@
       intentAgree,
       toneGroup,
       toneProfessional,
-      suggestionLoading,
-      suggestionText,
-      suggestionsCount,
-      suggestionCard,
       insertedReply,
     } = els;
 
     // Clear UI state.
-    closePopup(popup);
+    resetPluginToolState(els);
     setCursorVisible(cursor, false);
     setDemoHover(null);
     cursor.classList.remove("is-clicking");
@@ -143,13 +197,6 @@
     Array.from(toneGroup?.querySelectorAll(".popup-switch-option.is-pressed") ?? []).forEach((n) =>
       n.classList.remove("is-pressed")
     );
-    suggestionCard.classList.remove("is-pressed");
-
-    // Suggestions area.
-    suggestionCard.classList.remove("is-loading", "is-ready");
-    setLoading(suggestionLoading, false);
-    suggestionsCount.textContent = "0";
-    suggestionText.textContent = "";
 
     // Inserted reply bubble.
     insertedReply.classList.remove("is-shown");
@@ -157,8 +204,7 @@
     insertedReply.querySelector(".reply-text").textContent = "";
 
     // Radio selections back to defaults.
-    setRadioGroupSelection(intentGroup, intentAgree);
-    setRadioGroupSelection(toneGroup, toneProfessional);
+    // (Handled by resetPluginToolState)
 
     // Feed scroll reset.
     shell.classList.add("is-resetting");
@@ -220,6 +266,16 @@
     loadingEl.setAttribute("aria-hidden", isLoading ? "false" : "true");
   }
 
+  function setSuggestionsVisible(sectionEl, isVisible) {
+    if (!sectionEl) return;
+    sectionEl.hidden = !isVisible;
+  }
+
+  function setGenerateButtonLoading(generateLabel, generateSpinner, isLoading) {
+    if (generateLabel) generateLabel.textContent = isLoading ? "Crafting reply..." : "Craft Reply";
+    if (generateSpinner) generateSpinner.setAttribute("aria-hidden", isLoading ? "false" : "true");
+  }
+
   function setRadioGroupSelection(groupEl, selectedEl) {
     const radios = Array.from(groupEl?.querySelectorAll('[role="radio"]') ?? []);
     for (const radio of radios) {
@@ -240,6 +296,8 @@
       stepLabel,
       cursor,
       generateBtn,
+      generateLabel,
+      generateSpinner,
       intentGroup,
       intentAgree,
       intentCompliment,
@@ -248,8 +306,8 @@
       toneProfessional,
       suggestionLoading,
       suggestionText,
-      suggestionsCount,
       suggestionCard,
+      suggestionsSection,
       insertedReply,
     } = els;
 
@@ -296,6 +354,7 @@
     // Popup opens.
     // Ensure defaults are visible at the moment the plugin appears.
     setRadioGroupSelection(intentGroup, intentAgree);
+    setRadioGroupSelection(toneGroup, toneProfessional);
     openPopup(popup);
     await sleep(WAIT_AFTER_POPUP_OPEN_MS, signal);
 
@@ -322,18 +381,21 @@
     pulseCursorClick(cursor);
     setPressedClass(generateBtn);
 
-    // Show loading spinner, then reveal the full suggestion.
-    suggestionsCount.textContent = "1";
+    // Show loading state on the button, then reveal the full suggestion.
+    setSuggestionsVisible(suggestionsSection, false);
+    setGenerateButtonLoading(generateLabel, generateSpinner, true);
     suggestionText.textContent = "";
     suggestionCard.classList.add("is-loading");
     suggestionCard.classList.remove("is-ready");
-    setLoading(suggestionLoading, true);
-    await sleep(GENERATION_LOADING_MS, signal);
     setLoading(suggestionLoading, false);
+    await sleep(GENERATION_LOADING_MS, signal);
+    setGenerateButtonLoading(generateLabel, generateSpinner, false);
     suggestionCard.classList.remove("is-loading");
-    suggestionText.textContent = SUGGESTION;
+    setSuggestionsVisible(suggestionsSection, true);
+    const typeMs = clamp(SUGGESTION.length * TYPE_REPLY_MS_PER_CHAR, TYPE_REPLY_MIN_MS, TYPE_REPLY_MAX_MS);
+    await typeText(suggestionText, SUGGESTION, typeMs, signal);
     suggestionCard.classList.add("is-ready");
-    await sleep(WAIT_AFTER_AI_REPLY_MS, signal);
+    await sleep(Math.max(0, WAIT_AFTER_AI_REPLY_MS - typeMs), signal);
 
     // Step 5: show response and move cursor to Insert.
     // Keep the headline on "AI-generated reply" until we insert.
@@ -353,6 +415,8 @@
     insertedReply.querySelector(".reply-text").textContent = SUGGESTION;
     insertedReply.classList.add("is-shown");
     insertedReply.setAttribute("aria-hidden", "false");
+    // After posting, leave the plugin in its initial (fresh) state.
+    resetPluginToolState(els);
     await sleep(WAIT_AFTER_POST_MS, signal);
   }
 
@@ -370,6 +434,8 @@
       stepLabel: document.querySelector(SELECTORS.stepLabel),
       cursor: shell.querySelector(SELECTORS.cursor),
       generateBtn: shell.querySelector(SELECTORS.generateBtn),
+      generateSpinner: shell.querySelector(SELECTORS.generateSpinner),
+      generateLabel: shell.querySelector(SELECTORS.generateLabel),
       intentGroup: shell.querySelector(SELECTORS.intentGroup),
       intentAgree: shell.querySelector(SELECTORS.intentAgree),
       intentCompliment: shell.querySelector(SELECTORS.intentCompliment),
@@ -378,8 +444,8 @@
       toneProfessional: shell.querySelector(SELECTORS.toneProfessional),
       suggestionLoading: shell.querySelector(SELECTORS.suggestionLoading),
       suggestionText: shell.querySelector(SELECTORS.suggestionText),
-      suggestionsCount: shell.querySelector(SELECTORS.suggestionsCount),
       suggestionCard: shell.querySelector(SELECTORS.suggestionCard),
+      suggestionsSection: shell.querySelector(SELECTORS.suggestionsSection),
       insertedReply: shell.querySelector(SELECTORS.insertedReply),
     };
 
@@ -415,7 +481,7 @@
       setTrackOffset(els.track, desiredOffset, 0);
 
       // Show the “after” state without motion.
-      els.suggestionsCount.textContent = "1";
+      setSuggestionsVisible(els.suggestionsSection, true);
       setLoading(els.suggestionLoading, false);
       els.suggestionCard.classList.remove("is-loading");
       els.suggestionText.textContent = SUGGESTION;
