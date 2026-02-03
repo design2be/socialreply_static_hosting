@@ -140,6 +140,7 @@
       intentAgree,
       toneGroup,
       toneProfessional,
+      generateBtn,
       generateLabel,
       generateSpinner,
       suggestionLoading,
@@ -153,7 +154,7 @@
     // Reset plugin UI back to "fresh load" defaults.
     setRadioGroupSelection(intentGroup, intentAgree);
     setRadioGroupSelection(toneGroup, toneProfessional);
-    setGenerateButtonLoading(generateLabel, generateSpinner, false);
+    setGenerateButtonLoading(generateBtn, generateLabel, generateSpinner, false);
     suggestionCard.classList.remove("is-loading", "is-ready", "is-pressed");
     setLoading(suggestionLoading, false);
     suggestionText.textContent = "";
@@ -271,7 +272,8 @@
     sectionEl.hidden = !isVisible;
   }
 
-  function setGenerateButtonLoading(generateLabel, generateSpinner, isLoading) {
+  function setGenerateButtonLoading(generateBtn, generateLabel, generateSpinner, isLoading) {
+    if (generateBtn) generateBtn.classList.toggle("is-loading", isLoading);
     if (generateLabel) generateLabel.textContent = isLoading ? "Crafting reply..." : "Craft Reply";
     if (generateSpinner) generateSpinner.setAttribute("aria-hidden", isLoading ? "false" : "true");
   }
@@ -383,13 +385,13 @@
 
     // Show loading state on the button, then reveal the full suggestion.
     setSuggestionsVisible(suggestionsSection, false);
-    setGenerateButtonLoading(generateLabel, generateSpinner, true);
+    setGenerateButtonLoading(generateBtn, generateLabel, generateSpinner, true);
     suggestionText.textContent = "";
     suggestionCard.classList.add("is-loading");
     suggestionCard.classList.remove("is-ready");
     setLoading(suggestionLoading, false);
     await sleep(GENERATION_LOADING_MS, signal);
-    setGenerateButtonLoading(generateLabel, generateSpinner, false);
+    setGenerateButtonLoading(generateBtn, generateLabel, generateSpinner, false);
     suggestionCard.classList.remove("is-loading");
     setSuggestionsVisible(suggestionsSection, true);
     const typeMs = clamp(SUGGESTION.length * TYPE_REPLY_MS_PER_CHAR, TYPE_REPLY_MIN_MS, TYPE_REPLY_MAX_MS);

@@ -839,6 +839,72 @@ body {
   margin-bottom: 6px;
 }
 
+.popup-slider-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.popup-slider-head .popup-label {
+  margin-bottom: 0;
+}
+
+.popup-slider-value {
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: rgba(17, 24, 39, 0.62);
+}
+
+.popup-slider {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(47, 129, 255, 0.35) 0%, rgba(139, 92, 246, 0.35) 100%);
+  outline: none;
+}
+
+.popup-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(15, 22, 38, 0.14);
+  box-shadow:
+    0 14px 28px rgba(17, 24, 39, 0.16),
+    0 0 0 4px rgba(47, 129, 255, 0.12);
+  cursor: pointer;
+}
+
+.popup-slider::-moz-range-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(15, 22, 38, 0.14);
+  box-shadow:
+    0 14px 28px rgba(17, 24, 39, 0.16),
+    0 0 0 4px rgba(47, 129, 255, 0.12);
+  cursor: pointer;
+}
+
+.popup-slider::-moz-range-track {
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(47, 129, 255, 0.35) 0%, rgba(139, 92, 246, 0.35) 100%);
+}
+
+.popup-slider:focus-visible {
+  outline: 3px solid rgba(47, 129, 255, 0.28);
+  outline-offset: 4px;
+}
+
 .popup-chip {
   display: inline-flex;
   font-size: 12px;
@@ -862,7 +928,7 @@ body {
   color: rgba(17, 24, 39, 0.76);
   padding: 7px 10px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1;
   font-weight: 650;
   letter-spacing: -0.01em;
@@ -1020,6 +1086,10 @@ body {
   background: linear-gradient(90deg, #2f81ff 0%, #8b5cf6 100%);
   color: #ffffff;
   border-radius: 999px;
+  min-height: 46px;
+  padding-top: 13px;
+  padding-bottom: 13px;
+  font-size: 15px;
 }
 
 .popup-btn-spinner {
@@ -1043,6 +1113,10 @@ body {
     0 16px 34px rgba(17, 24, 39, 0.14),
     0 0 0 3px rgba(47, 129, 255, 0.14),
     0 0 28px rgba(139, 92, 246, 0.22);
+}
+
+.popup-btn--primary.is-loading .popup-btn-icon {
+  display: none;
 }
 
 .popup-btn--danger {
