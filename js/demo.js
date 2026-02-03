@@ -30,7 +30,7 @@
   };
 
   const SUGGESTION =
-    "Great question. I start with safety + calm: teach a “look at me”, a hand target (“touch”), and a quick U-turn for escaping tough moments. Then I build tiny wins with distance and high-value treats. What’s the hardest situation right now—barking, pulling, or jumping?";
+    "Totally feel this. What helped us was practicing “look” and a quick U-turn before we’re too close, then rewarding calm from a distance. Keep sessions short, use high-value treats, and increase space before your dog goes over threshold. Are greetings harder with people or other dogs?";
 
   const STEPS = [
     "1. Scroll your feed (LinkedIn, YouTube, Instagram).",
